@@ -62,8 +62,18 @@ set_seed (const char seed_str[])
 //    Check that the return value is 1 to ensure the user enters only an integer. 
 //    Feel free to uncomment these statements, modify them, or delete these comments as necessary. 
 //    You may need to change the return statement below
-   
-    return 0;
+
+    int seed;           //contains the number typed by user
+    char post[2];       //contains data typed after first integer
+
+    if (sscanf(seed_str, "%d%1s", &seed, post) == 1) {   //checks if sscanf returns 1
+        srand(seed);                                     //initiate random number generation through seed
+        return 1;
+    }
+    else {
+        printf("set_seed: invalid seed\n");                    //else terminate
+        return 0;
+    }
 }
 
 
@@ -86,7 +96,17 @@ void
 start_game (int* one, int* two, int* three, int* four)
 {
     //your code here
-    
+    *one = rand() % 8 + 1;         //generate four random solutions between 0 and 8
+    *two = rand() % 8 + 1;
+    *three = rand() % 8 + 1;
+    *four = rand() % 8 + 1;
+
+    guess_number = 1;
+
+    solution1 = *one;              //copy the four solutions to static variables
+    solution2 = *two;
+    solution3 = *three;
+    solution4 = *four; 
 }
 
 /*
@@ -126,7 +146,73 @@ make_guess (const char guess_str[], int* one, int* two,
 //  You should then check if the 4 integers are between 1-8. If so, it is a valid guess
 //  Otherwise, it is invalid.  
 //  Feel free to use this sscanf statement, delete these comments, and modify the return statement as needed
+
+    int w,x,y,z;
+    char post[2];
+
+
+    if (sscanf(guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post) == 0) {      //Check if user guess is valid integers
+        printf("make_guess: invalid guess\n");
+        return 0;
+    }
+    else if (w < 1 || w > 8 || x < 1 || x > 8 || y < 1 || y > 8 || z < 1 || z > 8 || sscanf(guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post) != 4) {
+        printf("make_guess: invalid guess\n");
+        return 0;
+    }
+    //if code reaches this line, then the input is valid string
+
+    *one = w;
+    *two = x;
+    *three = y;
+    *four = z;
+    
+
+    int guess_array[4] = {*one, *two, *three, *four};
+    int solution_array[4] = {solution1, solution2, solution3, solution4};
+    int misplaced = 0;
+    int perfect = 0;
+
+    for (int i = 0; i < 4; i++) {
+        if (guess_array[i] == solution_array[i]) {
+            perfect++;
+        } else {
+            for (int j = 0; j < 4; j++) {
+                if (i != j && guess_array[i] == solution_array[j]) {
+                    misplaced++;
+                    break; // Break after finding a misplaced match for this value
+                }
+            }
+        }
+    }
+
+    printf("With guess %d, you got %d perfect matches and %d misplaced matches.\n", guess_number, perfect, misplaced);
+    guess_number++;
     return 1;
+/*
+    for (i=0; i<4; i++) { 
+        if (guess_array[i] == solution_array[i]) { 
+            perfect = perfect + 1;
+            continue;
+        }
+    }
+
+    for (i=0; i<4; i++) {
+        for (j=0; j<4; j++) {
+            if (j == i) {
+                continue;
+            }
+            if (guess_array[i] == solution_array[j]) {
+                misplaced = misplaced + 1;
+                
+            }
+        }
+    }
+   
+
+    printf("With guess %d, you got %d perfect matches and %d misplaced matches.\n",guess_number, perfect, misplaced);
+    guess_number = guess_number + 1;
+    return 1;
+    */
 }
 
 
