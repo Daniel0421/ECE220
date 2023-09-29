@@ -1,3 +1,17 @@
+/*
+Partners: jihwank4, hc55
+For this mp, we set a seed, start a game setting a random number, make guess and get informtion if we 
+have a perfect match or a misplaced number. We have used pointers to keep the numbers guess and the solutions.
+We used if loop to check if the guess (user input) is a valid combination.
+Then used one for loop to check for perfect match and set the numbers to 0 or 9 which are not in the range of
+numbers that solution can have or user can input inorder to remove them from checking for misplacement as we
+already know they are a perfect match.
+For misplacement, we used the same mechanism as perfect match, but instead used two for loops to check if they are
+in different location of the array, and also set them to 0 or 9 to prevent from checking same numbers like 1123.
+ */
+
+
+
 /*			
  *
  * prog5.c - source file adapted from UIUC ECE198KL Spring 2013 Program 4
@@ -44,7 +58,7 @@ static int solution4;
  *               other than a single integer), or 1 if string is valid (contains one integer)
  * SIDE EFFECTS: initializes pseudo-random number generation using the function srand. Prints "set_seed: invalid seed\n"
  *               if string is invalid. Prints nothing if it is valid.
- */
+s */
 int
 set_seed (const char seed_str[])
 {
@@ -155,64 +169,43 @@ make_guess (const char guess_str[], int* one, int* two,
         printf("make_guess: invalid guess\n");
         return 0;
     }
-    else if (w < 1 || w > 8 || x < 1 || x > 8 || y < 1 || y > 8 || z < 1 || z > 8 || sscanf(guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post) != 4) {
+    else if (w < 1 || w > 8 || x < 1 || x > 8 || y < 1 || y > 8 || z < 1 || z > 8 || sscanf(guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post) != 4) { //Check if input is in between the range 0~8
         printf("make_guess: invalid guess\n");
         return 0;
     }
     //if code reaches this line, then the input is valid string
 
+    //set arrays, pointers into the array so that we can check in the next step
     *one = w;
     *two = x;
     *three = y;
     *four = z;
     
-
     int guess_array[4] = {*one, *two, *three, *four};
     int solution_array[4] = {solution1, solution2, solution3, solution4};
     int misplaced = 0;
     int perfect = 0;
 
-    for (int i = 0; i < 4; i++) {
-        if (guess_array[i] == solution_array[i]) {
-            perfect++;
-        } else {
-            for (int j = 0; j < 4; j++) {
-                if (i != j && guess_array[i] == solution_array[j]) {
-                    misplaced++;
-                    break; // Break after finding a misplaced match for this value
-                }
-            }
-        }
+    for(int i = 0; i < 4; i++) {                      //Check for perfect match
+      if(solution_array[i] == guess_array[i]) {       //If perfect match, set the guess to 0, solution to 9 to avoid checking the same number later for misplace, increment perfect counter
+        guess_array[i]=0;
+        solution_array[i]=9;
+	perfect++;
+      }
+    }
+    
+    for (int i = 0; i < 4; i++) {                     //Check for misplaced. As from previous loop we removed all perfect match, 
+      for (int j = 0; j < 4; j++) {                   //No need for other conditions, but to use two for loops to check if any guess matches the solution
+	if (guess_array[j] == solution_array[i]) {    //If miplaced, set guess to 0, solution to 9, increment misplaced counter
+	  guess_array[j]=0;
+	  solution_array[i]=9;
+	  misplaced++;
+	  break; // Break after finding a misplaced match for this value
+	}
+      }
     }
 
     printf("With guess %d, you got %d perfect matches and %d misplaced matches.\n", guess_number, perfect, misplaced);
     guess_number++;
     return 1;
-/*
-    for (i=0; i<4; i++) { 
-        if (guess_array[i] == solution_array[i]) { 
-            perfect = perfect + 1;
-            continue;
-        }
-    }
-
-    for (i=0; i<4; i++) {
-        for (j=0; j<4; j++) {
-            if (j == i) {
-                continue;
-            }
-            if (guess_array[i] == solution_array[j]) {
-                misplaced = misplaced + 1;
-                
-            }
-        }
-    }
-   
-
-    printf("With guess %d, you got %d perfect matches and %d misplaced matches.\n",guess_number, perfect, misplaced);
-    guess_number = guess_number + 1;
-    return 1;
-    */
 }
-
-
