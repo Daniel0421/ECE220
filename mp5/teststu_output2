@@ -27,7 +27,7 @@ Enter your guess (#1 #2 #3 #4): make_guess: invalid guess
 Enter your guess (#1 #2 #3 #4): With guess 5, you got 1 perfect matches and 0 misplaced matches.
 Guess 6
 Enter your guess (#1 #2 #3 #4): make_guess: invalid guess
-Enter your guess (#1 #2 #3 #4): With guess 6, you got 1 perfect matches and 1 misplaced matches.
+Enter your guess (#1 #2 #3 #4): With guess 6, you got 1 perfect matches and 0 misplaced matches.
 Guess 7
 Enter your guess (#1 #2 #3 #4): make_guess: invalid guess
 Enter your guess (#1 #2 #3 #4): make_guess: invalid guess
