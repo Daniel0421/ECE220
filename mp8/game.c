@@ -1,5 +1,15 @@
 #include "game.h"
 
+/*Partners: hc55, jihwank4
+    In this MP, we have implemented the game called 2048. The main concept we have used in this code is the 
+    utlization of structs. By doing so, we access 1D arrays in a different way.
+    This code consists of 8 functions in which we have modified, game*make_game(), remake_game(),  cell*get_cell(),
+    move_w(), move_s(), move_a(), move_d(), and legal_move_check() respectively. Functions before the four move..() 
+    fuctions implement housekeeping of the game, such as setting up cells and destroying them. The four move..() 
+    functions implement the main logic in the game, which is determined by the directino inputted by the user. Lastly,
+    legal_check_check() function implements the checking process of validity of the inputs by user.
+    A much more detailed logic and explanations are commented thourgh each function.*/
+
 
 game * make_game(int rows, int cols)
 /*! Create an instance of a game structure with the given number of rows
