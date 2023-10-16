@@ -78,10 +78,11 @@ cell * get_cell(game * cur_game, int row, int col)
 */
 {
     //YOUR CODE STARTS HERE
-    if (cur_game->rows < row || cur_game->cols < col) {
-        return &cur_game->cells[(cur_game->rows)*row+col]; //return pointer to the corresponding cell
+    if (cur_game->rows < row || cur_game->cols < col || row < 0 || col < 0) {
+        return NULL;
+        
     }
-    return NULL;
+    return &cur_game->cells[(cur_game->cols)*row+col]; //return pointer to the corresponding cell
 }
 
 int move_w(game * cur_game)
@@ -134,7 +135,7 @@ int move_s(game * cur_game) //slide down
 
     for (i=0; i<(cur_game->cols); i++) {
         int previous = -1;      //this checks for previously checked cells
-        for (j=(cur_game->rows)-1; i>=0; i--) {
+        for (j=(cur_game->rows)-1; j>=0; j--) {
             if(cur_game->cells[(cur_game->cols)*j+i] != -1) {       //if current cell is not empty
                 for (k=(cur_game->rows)-1; k>j; k--) {              //loop throught the rows from bottom to top
                     if (cur_game->cells[(cur_game->cols*k+i)] == -1) {      //if the cell is empty
