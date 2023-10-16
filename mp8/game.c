@@ -14,7 +14,14 @@ game * make_game(int rows, int cols)
     mygame->cells = malloc(rows*cols*sizeof(cell));
 
     //YOUR CODE STARTS HERE:  Initialize all other variables in game struct
+    mygame -> cols = cols;          //use "->"" to access the struct 
+    mygame -> rows = rows;          //use "->"" to access the struct 
+    mygame -> score = 0;            //initialize score to 0
 
+    int i;                          //initialize loop counter
+    for (i=0; i<rows*cols; i++) {   //set all cells as -1
+        mygame -> cells[i] = -1;
+    }
 
     return mygame;
 }
@@ -32,7 +39,14 @@ void remake_game(game ** _cur_game_ptr,int new_rows,int new_cols)
 	(*_cur_game_ptr)->cells = malloc(new_rows*new_cols*sizeof(cell));
 
 	 //YOUR CODE STARTS HERE:  Re-initialize all other variables in game struct
+    (*_cur_game_ptr) -> cols = new_cols;    //reinitialize cols
+    (*_cur_game_ptr) -> rows = new_rows;    //reinitialize rows
+    (*_cur_game_ptr) -> score = 0;          //reinitialize score
 
+    int i;
+    for (i=0; i<new_rows*new_cols; i++) {   //reinitialize all cells to -1
+        (*_cur_game_ptr) -> cells[i] = -1;
+    }
 	return;	
 }
 
@@ -54,7 +68,9 @@ cell * get_cell(game * cur_game, int row, int col)
 */
 {
     //YOUR CODE STARTS HERE
-
+    if (cur_game->rows < row || cur_game->cols < col) {
+        return &cur_game->cells[(cur_game->rows)*row+col]; //return pointer to the corresponding cell
+    }
     return NULL;
 }
 
@@ -67,28 +83,146 @@ int move_w(game * cur_game)
 */
 {
     //YOUR CODE STARTS HERE
+    int i,j,k;                      //initialize loop counter
+    int changedCells = 0;          //initialize variable that checks if change in tile has occured
 
-    return 1;
+    for (i=0; i<(cur_game->cols); i++) {
+        int previous = -1;          //this checks for previously checked cells
+        for (j=0; j<(cur_game->rows); j++) {
+            if (cur_game->cells[(cur_game->cols)*j+i] != -1) {      //if current cell is not empty
+                for (k=0; k<j; k++) {               //loop though a cells in the current row
+                    if (cur_game->cells[(cur_game->cols)*k+i] == -1) {  //if the column cell is empty
+                        cur_game->cells[(cur_game->cols)*k+i] = cur_game->cells[(cur_game->cols)*j+i]; //move up current cell to one above
+                        cur_game->cells[(cur_game->cols)*j+i] = -1;      //reset current cell to -1
+                        changedCells++;   //declare changed
+                        break; //done moving cells so leave
+                    } 
+                }
+                if ((k-1)!=previous) {      //if above row is not just modified
+                    if (cur_game->cells[(k-1)*(cur_game->cols)+i]==cur_game->cells[(cur_game->cols)*k+i]) {     //if above cell is equal to current
+                        cur_game->cells[(k-1)*(cur_game->cols)+i] += cur_game->cells[(k-1)*(cur_game->cols)+i];     //set above cell to 2*current 
+                        cur_game->cells[(cur_game->cols)*k+i] = -1;     //empty current cell
+                        cur_game->score += cur_game->cells[(k-1)*(cur_game->cols)+i];   //increment score with the new cell value
+                        changedCells++; //declare changed
+                        previous = k-1; //update previous to the newly modified row
+                    }
+                }
+            }
+        }
+    }
+    if (changedCells != 0) {
+        return 1;
+    }
+    return changedCells;
 };
 
 int move_s(game * cur_game) //slide down
 {
     //YOUR CODE STARTS HERE
+    int i,j,k;                  //initialize loop counter
+    int changedCells = 0;       //initialize varible that checks if change in tile has occured
 
-    return 1;
+    for (i=0; i<(cur_game->cols); i++) {
+        int previous = -1;      //this checks for previously checked cells
+        for (j=(cur_game->rows)-1; i>=0; i--) {
+            if(cur_game->cells[(cur_game->cols)*j+i] != -1) {       //if current cell is not empty
+                for (k=(cur_game->rows)-1; k>j; k--) {              //loop throught the rows from bottom to top
+                    if (cur_game->cells[(cur_game->cols*k+i)] == -1) {      //if the cell is empty
+                        cur_game->cells[(cur_game->cols)*k+i] = cur_game->cells[(cur_game->cols)*j+i]; //move down current cell to one below
+                        cur_game->cells[(cur_game->cols)*j+i] = -1;     //reset current cell to -1
+                        changedCells++;       //declare changed
+                        break;      //done moving cells so leave
+                    }
+                }
+                if ((k+1)!=previous) {      //if below cell is not just modified
+                    if (cur_game->cells[(cur_game->cols)*(k+1)+i]==cur_game->cells[(cur_game->cols)*k+i]) {     //if below cell is equal to current
+                        cur_game->cells[(cur_game->cols)*(k+1)+i] += cur_game->cells[(cur_game->cols)*(k+1)+i];   //set below cell to 2*current
+                        cur_game->cells[(cur_game->cols)*k+i] = -1;     //empty current cell
+                        cur_game->score += cur_game->cells[(cur_game->cols)*(k+1)+i];      //increment score with the new cell value
+                        changedCells++;   //declare changed
+                        previous = k+1;     //update previous to the newly modified 
+                    }
+                }
+            }
+
+        }
+    }
+    if (changedCells != 0) {
+        return 1;
+    }
+    return changedCells;
 };
 
 int move_a(game * cur_game) //slide left
 {
     //YOUR CODE STARTS HERE
+    int i,j,k; //intialize loop counter
+    int changedCells = 0;       //initialize variable that checks if change in tile has occured
 
-    return 1;
+    for (i=0; i<(cur_game->rows); i++) {
+        int previous = -1;
+        for (j=0; j<(cur_game->cols); j++) {
+            if (cur_game->cells[(cur_game->cols)*i+j] != -1) {      //if current cell is not empty
+                for (k=0; k<j; k++) {     //loops through the current row
+                    if (cur_game->cells[(cur_game->cols)*i+k] == -1) {      //if the current cell is empty
+                        cur_game->cells[(cur_game->cols)*i+k] = cur_game->cells[(cur_game->cols)*i+j];  //copy current cell to the cell one left
+                        cur_game->cells[(cur_game->cols)*i+j] = -1;     //reset current cell to -1
+                        changedCells++;       //declare changed
+                        break;                  //done moving cells so leave
+
+                    }
+                }
+                if ((k-1)!=previous) {          //if left cell is not just modified
+                    if (cur_game->cells[(cur_game->cols)*i+(k-1)] == cur_game->cells[(cur_game->cols)*i+k]) {       //if left cell is equal to current
+                        cur_game->cells[(cur_game->cols)*i+(k-1)] += cur_game->cells[(cur_game->cols)*i+(k-1)];     //set left cell to 2*current
+                        cur_game->cells[(cur_game->cols)*i+k] = -1;     //empty current cell
+                        cur_game->score += cur_game->cells[(cur_game->cols)*i+(k-1)]; //increment score with the new cell value
+                        changedCells++;   //declare changed
+                        previous = k-1;     //update previous to the newly modified 
+                    }
+                }
+            }
+        }
+    }
+    if (changedCells != 0) {
+        return 1;
+    }
+    return changedCells;
 };
 
 int move_d(game * cur_game){ //slide to the right
     //YOUR CODE STARTS HERE
-
-    return 1;
+    int i,j,k;              //intialize loop counter
+    int changedCells = 0;   //initialize variable that checks if change in tile has occured
+    
+    for (i=0; i<cur_game->rows; i++) {
+        int previous = -1;
+        for (j=(cur_game->cols)-1; j>=0; j--) {
+            if (cur_game->cells[(cur_game->cols)*i+j] != -1) {      //if current cell is not empty
+                for (k=((cur_game->cols)-1); k>j;k--) {         //loop through the current row
+                    if (cur_game->cells[(cur_game->cols)*i+k] == -1) {      //if cell is empty
+                        cur_game->cells[(cur_game->cols)*i+k] = cur_game->cells[(cur_game->cols*i+j)];  //copy current cell to the cell one right
+                        cur_game->cells[(cur_game->cols)*i+j] = -1;     //reset current cell to -1
+                        changedCells++; //declare changed
+                        break; //done moving cells so leave
+                    }
+                }
+                if ((k+1)!=previous) {      //if right cell is not just modified
+                    if (cur_game->cells[(cur_game->cols)*i+(k+1)] == cur_game->cells[(cur_game->cols)*i+k]) {   //if right cell is equal to current
+                        cur_game->cells[(cur_game->cols)*i+(k+1)] += cur_game->cells[(cur_game->cols)*i+(k+1)];     //set right cell to 2*current
+                        cur_game->cells[(cur_game->cols)*i+k] = -1;         //empty current cell
+                        cur_game->score += (cur_game->cells[(cur_game->cols)*i+(k+1)]);     //increment score with the new cell value
+                        changedCells++;               //declare changed
+                        previous = k+1;                 //update previous to the newly modified
+                    }
+                }
+            }
+        }
+    }
+    if (changedCells != 0) {
+        return 1;
+    }
+    return changedCells;
 };
 
 int legal_move_check(game * cur_game)
@@ -98,8 +232,42 @@ int legal_move_check(game * cur_game)
  */
 {
     //YOUR CODE STARTS HERE
+    int returnValue = 0;        //initialize return value
+    int posX, negX, posY,negY,origin;   //initialize direction variable
+    int i,j;                    //initialize loop counter
 
-    return 1;
+    for (i=0; i<cur_game->rows; i++) {      //iterate through all rows
+        for (j=0; j<cur_game->cols; j++) {  //iterate through all columns
+            if (cur_game->cells[(cur_game->cols)*i+j] == -1) {      //if empty cells exist
+                returnValue++;
+            }
+
+            if (j+1<cur_game->cols) {       //if cells exist to the right
+                posX = cur_game->cells[(cur_game->cols)*i+(j+1)];
+            }else {posX = 0;}
+
+            if (j-1>=0) {                   //if cells exist to the left 
+                negX = cur_game->cells[(cur_game->cols)*(i)+(j-1)];
+            } else {negX = 0;}
+
+            if (i-1>0) {                    //if cells exist above
+                posY = cur_game->cells[(cur_game->cols)*(i-1)+j];
+            } else {posY = 0;}
+
+            if (i+1<cur_game->rows) {       //if cells exist below
+                negY = cur_game->cells[(cur_game->cols)*(i+1)+j];
+            } else {negY = 0;}
+
+            origin = cur_game->cells[(cur_game->cols)*i+j];  //current cell
+            if (origin==posX || origin==negX || origin==posY || origin==negY) { //if current cell and any neighboring cell have sam tile
+                returnValue++;      //increment returnValue
+            }
+        }
+    }
+    if (returnValue != 0) {     //if returnValue is not 0 make returnValue 1
+        returnValue = 1; 
+    }
+    return returnValue;
 }
 
 
