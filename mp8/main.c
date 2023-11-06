@@ -2,6 +2,7 @@
 #include "getch_fun.h"
 #include <malloc.h>
 
+
 int main(int argc, char *argv[])
 {
 	int rows,cols;
